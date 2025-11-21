@@ -9,10 +9,10 @@ import java.nio.files.Paths;
 import java.util.List;
 import javax.imageio.IIOException;
 
-
-public class lox {
+public class Lox {
     static boolean hadError = false;
-    public static void main (String[]args) throws IOException {
+
+    public static void main(String[] args) throws IOException {
         if (args.length > 1) {
             System.out.println("Usage: jlox [script]");
             System.exit(64);
@@ -21,10 +21,10 @@ public class lox {
         } else {
             runPrompt();
         }
-
     }
+
     private static void runFile(String path) throws IOException {
-        byte[] bytes = Files.readAllBytes(Path.get(path));
+        byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
         if (hadError) System.exit(65);
     }
@@ -34,7 +34,7 @@ public class lox {
         BufferedReader reader = new BufferedReader(input);
 
         for (;;) {
-            System.out.print(">>");
+            System.out.print(">> ");
             String line = reader.readLine();
             if (line == null) break;
             run(line);
@@ -42,25 +42,22 @@ public class lox {
         }
     }
 
-    private static void run(String source){
-        Scanner scanner = new Scanner(Source);
+    private static void run(String source) {
+        Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
 
-        for (Token token : tokens){
+        for (Token token : tokens) {
             System.out.println(token);
-        
         }
     }
 
     static void error(int line, String message) {
-        report(line,"", message);
-
+        report(line, "", message);
     }
 
-    private static void report(int line, String Where, String message) {
+    private static void report(int line, String where, String message) {
         System.err.println(
-            "[line " + line + "] Error" + Where + ": " + message);
+            "[line " + line + "] Error" + where + ": " + message);
         hadError = true;
     }
-
 }
