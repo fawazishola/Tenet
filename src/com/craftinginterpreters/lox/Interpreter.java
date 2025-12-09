@@ -18,7 +18,7 @@ class Interpreter implements Expr.Visitor<Object> {
     }
 
     @Override
-    public Object vistiUnaryExpr(Expr.Unary expr) {
+    public Object visitUnaryExpr(Expr.Unary expr) {
         Object right = evaluate(expr.right);
 
         switch (expr.operator.type) {
@@ -30,6 +30,14 @@ class Interpreter implements Expr.Visitor<Object> {
 
         return null;
 
+    }
+
+    private boolean isTruthy(Object object) {
+        if (object == null)
+            return false;
+        if (object instanceof boolean)
+            return (boolean) object;
+        return true;
     }
 
 }
