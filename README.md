@@ -140,8 +140,8 @@ java -cp out org.axiom.tenet.Tenet
 - [x] Resolving & Binding
 - [x] Classes
 - [x] Inheritance
-- [x] **Game Definitions** ✨ **NEW**
-- [x] **Solve Statement** ✨ **NEW**
+- [x] **Game Definitions** 
+- [x] **Solve Statement** 
 - [ ] Nash Equilibrium Solver (pure strategies)
 - [ ] Nash Equilibrium Solver (mixed strategies)
 - [ ] Simulation Engine
