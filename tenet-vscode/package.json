@@ -1,0 +1,51 @@
+{
+  "name": "tenet-language",
+  "displayName": "Tenet",
+  "description": "Syntax highlighting for the Tenet game theory programming language",
+  "version": "0.1.0",
+  "publisher": "tenet-lang",
+  "engines": {
+    "vscode": "*"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "tenet",
+        "aliases": [
+          "Tenet",
+          "tenet"
+        ],
+        "extensions": [
+          ".tenet"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "lox",
+        "aliases": [
+          "Lox",
+          "lox"
+        ],
+        "extensions": [
+          ".lox"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "tenet",
+        "scopeName": "source.tenet",
+        "path": "./syntaxes/tenet.tmLanguage.json"
+      },
+      {
+        "language": "lox",
+        "scopeName": "source.tenet",
+        "path": "./syntaxes/tenet.tmLanguage.json"
+      }
+    ]
+  }
+}

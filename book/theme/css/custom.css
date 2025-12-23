@@ -1,0 +1,404 @@
+/*
+ * Tenet Documentation - Cyberpunk Theme
+ * Neon Cyan + Deep Black aesthetic
+ */
+
+/* ============================================
+   CSS Variables - Cyberpunk Color Palette
+   ============================================ */
+
+:root {
+    /* Neon Cyan primary */
+    --neon-cyan: #00FFFF;
+    --neon-cyan-glow: rgba(0, 255, 255, 0.4);
+    --neon-cyan-dim: #00CCCC;
+    
+    /* Deep blacks */
+    --deep-black: #0a0a0f;
+    --dark-surface: #0f0f18;
+    --dark-border: #1a1a2e;
+    
+    /* Supporting colors */
+    --neon-pink: #FF00FF;
+    --neon-purple: #8B00FF;
+    --neon-blue: #0080FF;
+    
+    /* Text */
+    --text-primary: #E0E0E0;
+    --text-secondary: #A0A0A0;
+    --text-code: #00FFFF;
+    
+    /* Syntax highlighting */
+    --code-bg: #0a0a12;
+    --code-keyword: #FF00FF;
+    --code-string: #00FF88;
+    --code-number: #FFB000;
+    --code-comment: #666680;
+    --code-function: #00FFFF;
+}
+
+/* ============================================
+   Base Theme Override (Coal/Dark)
+   ============================================ */
+
+.coal {
+    --bg: var(--deep-black);
+    --fg: var(--text-primary);
+    --sidebar-bg: var(--dark-surface);
+    --sidebar-fg: var(--text-primary);
+    --sidebar-active: var(--neon-cyan);
+    --links: var(--neon-cyan);
+    --inline-code-color: var(--neon-cyan);
+    --theme-popup-bg: var(--dark-surface);
+    --theme-popup-border: var(--dark-border);
+    --quote-bg: rgba(0, 255, 255, 0.05);
+    --quote-border: var(--neon-cyan);
+    --table-border-color: var(--dark-border);
+    --table-header-bg: var(--dark-surface);
+    --table-alternate-bg: rgba(0, 255, 255, 0.02);
+    --searchbar-border-color: var(--dark-border);
+    --searchbar-bg: var(--dark-surface);
+    --searchbar-fg: var(--text-primary);
+    --searchresults-header-fg: var(--neon-cyan);
+    --searchresults-border-color: var(--dark-border);
+    --searchresults-li-bg: var(--dark-surface);
+    --search-mark-bg: rgba(0, 255, 255, 0.3);
+}
+
+/* ============================================
+   Typography
+   ============================================ */
+
+body {
+    font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--deep-black);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan-glow);
+    border-bottom: 1px solid var(--dark-border);
+    padding-bottom: 0.5rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+h2 {
+    font-size: 1.8rem;
+}
+
+/* ============================================
+   Links - Neon Glow Effect
+   ============================================ */
+
+a {
+    color: var(--neon-cyan);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: #FFFFFF;
+    text-shadow: 0 0 8px var(--neon-cyan), 0 0 15px var(--neon-cyan-glow);
+}
+
+/* ============================================
+   Sidebar - Dark with Cyan Accents
+   ============================================ */
+
+.sidebar {
+    background-color: var(--dark-surface);
+    border-right: 1px solid var(--dark-border);
+}
+
+.sidebar .sidebar-scrollbox {
+    background-color: var(--dark-surface);
+}
+
+.sidebar a {
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.sidebar a:hover {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 5px var(--neon-cyan-glow);
+    background: rgba(0, 255, 255, 0.05);
+}
+
+.sidebar a.active {
+    color: var(--neon-cyan);
+    background: linear-gradient(90deg, rgba(0, 255, 255, 0.1) 0%, transparent 100%);
+    border-left: 3px solid var(--neon-cyan);
+}
+
+/* Chapter list styling */
+.chapter {
+    margin: 0.5rem 0;
+}
+
+.chapter li.chapter-item {
+    margin: 0.3rem 0;
+}
+
+/* ============================================
+   Code Blocks - Neon Syntax Theme
+   ============================================ */
+
+pre {
+    background-color: var(--code-bg);
+    border: 1px solid var(--dark-border);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+pre code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* Inline code */
+code {
+    background-color: rgba(0, 255, 255, 0.1);
+    color: var(--neon-cyan);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+    font-size: 0.9em;
+}
+
+/* Syntax highlighting */
+.hljs-keyword, .hljs-selector-tag {
+    color: var(--code-keyword) !important;
+}
+
+.hljs-string, .hljs-attr {
+    color: var(--code-string) !important;
+}
+
+.hljs-number, .hljs-literal {
+    color: var(--code-number) !important;
+}
+
+.hljs-comment {
+    color: var(--code-comment) !important;
+    font-style: italic;
+}
+
+.hljs-function, .hljs-title {
+    color: var(--code-function) !important;
+}
+
+.hljs-built_in {
+    color: var(--neon-blue) !important;
+}
+
+/* ============================================
+   Tables - Cyberpunk Grid
+   ============================================ */
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.5rem 0;
+    background-color: var(--dark-surface);
+}
+
+th {
+    background: linear-gradient(180deg, var(--dark-surface) 0%, var(--code-bg) 100%);
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.9rem;
+    padding: 1rem;
+    border-bottom: 2px solid var(--neon-cyan);
+}
+
+td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--dark-border);
+}
+
+tr:hover {
+    background: rgba(0, 255, 255, 0.03);
+}
+
+/* ============================================
+   Blockquotes - Accent Style
+   ============================================ */
+
+blockquote {
+    border-left: 4px solid var(--neon-cyan);
+    background: linear-gradient(90deg, rgba(0, 255, 255, 0.05) 0%, transparent 100%);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    color: var(--text-primary);
+    font-style: italic;
+}
+
+blockquote p {
+    margin: 0;
+}
+
+/* ============================================
+   Search Bar - Dark Theme
+   ============================================ */
+
+#searchbar {
+    background-color: var(--dark-surface);
+    border: 1px solid var(--dark-border);
+    color: var(--text-primary);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+}
+
+#searchbar:focus {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 10px var(--neon-cyan-glow);
+    outline: none;
+}
+
+/* ============================================
+   Menu Bar - Sleek Dark
+   ============================================ */
+
+.menu-bar {
+    background-color: var(--dark-surface);
+    border-bottom: 1px solid var(--dark-border);
+}
+
+.menu-bar i {
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+
+.menu-bar i:hover {
+    color: var(--neon-cyan);
+}
+
+/* ============================================
+   Navigation Buttons
+   ============================================ */
+
+.nav-chapters {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.nav-chapters:hover {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan-glow);
+}
+
+/* ============================================
+   Scrollbar - Custom Cyberpunk Style
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--deep-black);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--dark-border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-cyan-dim);
+}
+
+/* ============================================
+   Selection - Cyan Highlight
+   ============================================ */
+
+::selection {
+    background-color: rgba(0, 255, 255, 0.3);
+    color: #FFFFFF;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    h2 {
+        font-size: 1.4rem;
+    }
+    
+    pre {
+        font-size: 0.85rem;
+    }
+}
+
+/* ============================================
+   Special Elements - Tenet DSL Highlighting
+   ============================================ */
+
+/* Highlight Tenet keywords in docs */
+.tenet-keyword {
+    color: var(--code-keyword);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.tenet-builtin {
+    color: var(--neon-cyan);
+    font-weight: 600;
+}
+
+/* Warning/Info boxes */
+.warning {
+    background: rgba(255, 180, 0, 0.1);
+    border-left: 4px solid #FFB400;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.info {
+    background: rgba(0, 128, 255, 0.1);
+    border-left: 4px solid var(--neon-blue);
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        color: black;
+        text-shadow: none;
+    }
+    
+    a {
+        color: black;
+        text-decoration: underline;
+    }
+    
+    pre {
+        border: 1px solid #ccc;
+        box-shadow: none;
+    }
+}

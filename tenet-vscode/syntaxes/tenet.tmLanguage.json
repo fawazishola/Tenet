@@ -1,0 +1,244 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Tenet",
+    "scopeName": "source.tenet",
+    "patterns": [
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "include": "#numbers"
+        },
+        {
+            "include": "#game-definition"
+        },
+        {
+            "include": "#game-keywords"
+        },
+        {
+            "include": "#control-keywords"
+        },
+        {
+            "include": "#declaration-keywords"
+        },
+        {
+            "include": "#constants"
+        },
+        {
+            "include": "#operators"
+        },
+        {
+            "include": "#functions"
+        },
+        {
+            "include": "#classes"
+        }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.line.double-slash.tenet",
+                    "match": "//.*$"
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.tenet",
+                    "begin": "\"",
+                    "end": "\"",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.tenet",
+                            "match": "\\\\."
+                        }
+                    ]
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.tenet",
+                    "match": "\\b-?\\d+(\\.\\d+)?\\b"
+                }
+            ]
+        },
+        "game-definition": {
+            "patterns": [
+                {
+                    "comment": "Game declaration: game GameName {",
+                    "match": "\\b(game)\\s+([A-Z][a-zA-Z0-9_]*)\\s*\\{",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.game.tenet"
+                        },
+                        "2": {
+                            "name": "entity.name.type.game.tenet"
+                        }
+                    }
+                },
+                {
+                    "comment": "Payoff block: payoff PlayerName {",
+                    "match": "\\b(payoff)\\s+([A-Z][a-zA-Z0-9_]*)\\s*\\{",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.payoff.tenet"
+                        },
+                        "2": {
+                            "name": "entity.name.type.player.tenet"
+                        }
+                    }
+                },
+                {
+                    "comment": "Strategy profile: (Strategy1, Strategy2)",
+                    "begin": "\\(",
+                    "end": "\\)",
+                    "patterns": [
+                        {
+                            "name": "variable.parameter.strategy.tenet",
+                            "match": "\\b[A-Z][a-zA-Z0-9_]*\\b"
+                        },
+                        {
+                            "name": "punctuation.separator.comma.tenet",
+                            "match": ","
+                        }
+                    ]
+                }
+            ]
+        },
+        "game-keywords": {
+            "patterns": [
+                {
+                    "comment": "Game theory specific keywords",
+                    "name": "keyword.control.gametheory.tenet",
+                    "match": "\\b(game|players|strategies|payoff|solve|using)\\b"
+                }
+            ]
+        },
+        "control-keywords": {
+            "patterns": [
+                {
+                    "comment": "Control flow keywords",
+                    "name": "keyword.control.tenet",
+                    "match": "\\b(if|else|while|for|return)\\b"
+                }
+            ]
+        },
+        "declaration-keywords": {
+            "patterns": [
+                {
+                    "comment": "Declaration keywords",
+                    "name": "keyword.declaration.tenet",
+                    "match": "\\b(var|fun|class)\\b"
+                }
+            ]
+        },
+        "constants": {
+            "patterns": [
+                {
+                    "comment": "Boolean and nil constants",
+                    "name": "constant.language.tenet",
+                    "match": "\\b(true|false|nil)\\b"
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "comment": "Logical operators",
+                    "name": "keyword.operator.logical.tenet",
+                    "match": "\\b(and|or)\\b"
+                },
+                {
+                    "comment": "Comparison operators",
+                    "name": "keyword.operator.comparison.tenet",
+                    "match": "(==|!=|<=|>=|<|>)"
+                },
+                {
+                    "comment": "Arithmetic operators",
+                    "name": "keyword.operator.arithmetic.tenet",
+                    "match": "(\\+|-|\\*|/)"
+                },
+                {
+                    "comment": "Assignment",
+                    "name": "keyword.operator.assignment.tenet",
+                    "match": "="
+                },
+                {
+                    "comment": "Colon (payoff separator)",
+                    "name": "keyword.operator.colon.tenet",
+                    "match": ":"
+                }
+            ]
+        },
+        "functions": {
+            "patterns": [
+                {
+                    "comment": "Function declaration",
+                    "match": "\\b(fun)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\(",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.declaration.function.tenet"
+                        },
+                        "2": {
+                            "name": "entity.name.function.tenet"
+                        }
+                    }
+                },
+                {
+                    "comment": "Built-in functions",
+                    "name": "support.function.builtin.tenet",
+                    "match": "\\b(print|clock|random|max|min|abs|sqrt|floor|ceil|round)\\b"
+                },
+                {
+                    "comment": "Function call",
+                    "match": "\\b([a-z_][a-zA-Z0-9_]*)\\s*\\(",
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.function.call.tenet"
+                        }
+                    }
+                }
+            ]
+        },
+        "classes": {
+            "patterns": [
+                {
+                    "comment": "Class declaration",
+                    "match": "\\b(class)\\s+([A-Z][a-zA-Z0-9_]*)(\\s*<\\s*([A-Z][a-zA-Z0-9_]*))?",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.declaration.class.tenet"
+                        },
+                        "2": {
+                            "name": "entity.name.type.class.tenet"
+                        },
+                        "4": {
+                            "name": "entity.other.inherited-class.tenet"
+                        }
+                    }
+                },
+                {
+                    "comment": "this and super keywords",
+                    "name": "variable.language.tenet",
+                    "match": "\\b(this|super)\\b"
+                },
+                {
+                    "comment": "Class instantiation (PascalCase identifier)",
+                    "match": "\\b([A-Z][a-zA-Z0-9_]*)\\s*\\(",
+                    "captures": {
+                        "1": {
+                            "name": "entity.name.type.class.tenet"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

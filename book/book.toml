@@ -1,0 +1,31 @@
+[book]
+title = "Tenet"
+description = "A domain-specific language for game theory modeling, analysis, and simulation"
+authors = ["Axiom"]
+language = "en"
+
+[build]
+build-dir = "book"
+
+[output.html]
+default-theme = "coal"
+preferred-dark-theme = "coal"
+git-repository-url = "https://github.com/yourusername/tenet"
+git-repository-icon = "fa-github"
+site-url = "/"
+additional-css = ["theme/css/custom.css"]
+
+[output.html.fold]
+enable = true
+level = 1
+
+[output.html.playground]
+editable = false
+copy-js = true
+
+[output.html.search]
+enable = true
+limit-results = 30
+teaser-word-count = 30
+use-hierarchical-navigation = true
+copy-js = true

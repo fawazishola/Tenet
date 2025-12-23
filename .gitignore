@@ -30,3 +30,6 @@ hs_err_pid*
 out/
 bin/
 build/
+
+# mdBook build output
+book/book/

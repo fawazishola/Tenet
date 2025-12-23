@@ -1,0 +1,113 @@
+// === JLOX COMPREHENSIVE TEST SUITE ===
+// This script validates the entire language specification up to Chapter 13.
+
+var testsRun = 0;
+var testsFailed = 0;
+
+fun assert(condition, name) {
+  testsRun = testsRun + 1;
+  if (condition) {
+    print "[PASS] " + name;
+  } else {
+    print "[FAIL] " + name;
+    testsFailed = testsFailed + 1;
+  }
+}
+
+print "--- SECTION 1: VARIABLE SCOPE & SHADOWING ---";
+var a = "global";
+{
+  fun showA() { return a; }
+  assert(showA() == "global", "Closure captures global");
+  var a = "block";
+  assert(showA() == "global", "Closure persists despite shadowing");
+  assert(a == "block", "Local variable shadows global");
+}
+assert(a == "global", "Global variable remains untouched");
+
+print "--- SECTION 2: LOGIC & SHORT-CIRCUIT ---";
+assert(true or false, "OR returns true");
+assert(false or true, "OR returns true (right)");
+assert(!(false and true), "AND returns false");
+
+// Test Short-Circuiting (Side effects should not happen)
+var hit = false;
+fun sideEffect() { hit = true; return true; }
+false and sideEffect();
+assert(hit == false, "AND short-circuits (skips right side)");
+true or sideEffect();
+assert(hit == false, "OR short-circuits (skips right side)");
+
+print "--- SECTION 3: CONTROL FLOW ---";
+var sum = 0;
+var i = 0;
+while (i < 5) {
+  sum = sum + i;
+  i = i + 1;
+}
+assert(sum == 10, "While loop execution");
+
+var forSum = 0;
+for (var j = 0; j < 5; j = j + 1) {
+  forSum = forSum + j;
+}
+assert(forSum == 10, "For loop execution");
+
+print "--- SECTION 4: FUNCTIONS & RECURSION ---";
+fun fib(n) {
+  if (n < 2) return n;
+  return fib(n - 2) + fib(n - 1);
+}
+assert(fib(10) == 55, "Recursive Fibonacci");
+
+fun makeCounter() {
+  var i = 0;
+  fun count() {
+    i = i + 1;
+    return i;
+  }
+  return count;
+}
+var counter = makeCounter();
+assert(counter() == 1, "Closure retains state (1)");
+assert(counter() == 2, "Closure retains state (2)");
+
+print "--- SECTION 5: CLASSES & INSTANCES ---";
+class Bagel {
+  eat() { return "Crunch"; }
+}
+var b = Bagel();
+b.topping = "Cream Cheese";
+assert(b.eat() == "Crunch", "Method call");
+assert(b.topping == "Cream Cheese", "Property Get/Set");
+
+class Eclaire {
+  init() {
+    this.filling = "Custard";
+  }
+}
+assert(Eclaire().filling == "Custard", "Constructor (init)");
+
+print "--- SECTION 6: INHERITANCE & SUPER ---";
+class A {
+  method() { return "A"; }
+}
+class B < A {
+  method() { return "B"; }
+  test() { return super.method(); }
+}
+class C < B {}
+
+assert(C().test() == "A", "Super resolution from Child->Parent->Grandparent");
+assert(B().method() == "B", "Method overriding");
+assert(C().method() == "B", "Inherited method execution");
+
+print "===================================================";
+if (testsFailed == 0) {
+  print "SUMMARY: ALL TESTS PASSED!";
+  print testsRun;
+  print "tests completed.";
+} else {
+  print "SUMMARY: TESTS FAILED";
+  print testsFailed;
+}
