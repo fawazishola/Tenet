@@ -1,7 +1,7 @@
 [book]
 title = "Tenet"
 description = "A domain-specific language for game theory modeling, analysis, and simulation"
-authors = ["Axiom"]
+authors = ["Fawaz"]
 language = "en"
 
 [build]
