@@ -32,10 +32,24 @@ class Scanner {
         // Game theory keywords
         keywords.put("game", GAME);
         keywords.put("players", PLAYERS);
+        keywords.put("player", PLAYERS);
         keywords.put("strategies", STRATEGIES);
         keywords.put("payoff", PAYOFF);
         keywords.put("solve", SOLVE);
+        keywords.put("visualize", VISUALIZE);
         keywords.put("using", USING);
+        keywords.put("import", IMPORT);
+
+        // Mechanism design keywords
+        keywords.put("tweak", TWEAK);
+        keywords.put("from", FROM);
+        keywords.put("to", TO);
+        keywords.put("step", STEP);
+
+        // Sequential game keywords
+        keywords.put("sequential", SEQUENTIAL);
+        keywords.put("node", NODE);
+        keywords.put("move", MOVE);
     }
 
     private final String source;
@@ -80,7 +94,12 @@ class Scanner {
                 addToken(DOT);
                 break;
             case '-':
-                addToken(MINUS);
+                // Check for arrow ->
+                if (match('>')) {
+                    addToken(ARROW);
+                } else {
+                    addToken(MINUS);
+                }
                 break;
             case '+':
                 addToken(PLUS);
