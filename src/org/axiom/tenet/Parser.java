@@ -97,10 +97,18 @@ class Parser {
 
     private Stmt declaration() {
         try {
+            if (match(IMPORT))
+                return importStatement();
+            if (match(TWEAK))
+                return tweakStatement();
+            if (match(SEQUENTIAL))
+                return sequentialGameDeclaration();
             if (match(GAME))
                 return gameDeclaration();
             if (match(SOLVE))
                 return solveStatement();
+            if (match(VISUALIZE))
+                return visualizeStatement();
             if (match(CLASS))
                 return classDeclaration();
             if (match(FUN))
@@ -113,6 +121,117 @@ class Parser {
             synchronize();
             return null;
         }
+    }
+
+    /**
+     * Parses: tweak GAME_NAME { VARIABLE from NUMBER to NUMBER step NUMBER }
+     * Example: tweak PD { reward from 1 to 10 step 1 }
+     */
+    private Stmt tweakStatement() {
+        Token keyword = previous();
+        Token gameName = consume(IDENTIFIER, "Expect game name after 'tweak'.");
+        consume(LEFT_BRACE, "Expect '{' after game name.");
+
+        Token variable = consume(IDENTIFIER, "Expect variable name to tweak.");
+        consume(FROM, "Expect 'from' after variable name.");
+        Token fromToken = consume(NUMBER, "Expect number after 'from'.");
+        double fromValue = (double) fromToken.literal;
+
+        consume(TO, "Expect 'to' after from value.");
+        Token toToken = consume(NUMBER, "Expect number after 'to'.");
+        double toValue = (double) toToken.literal;
+
+        consume(STEP, "Expect 'step' after to value.");
+        Token stepToken = consume(NUMBER, "Expect number after 'step'.");
+        double stepValue = (double) stepToken.literal;
+
+        consume(RIGHT_BRACE, "Expect '}' after tweak body.");
+
+        return new Stmt.Tweak(keyword, gameName, variable, fromValue, toValue, stepValue);
+    }
+
+    /**
+     * Parses: import "library_name";
+     */
+    private Stmt importStatement() {
+        Token keyword = previous();
+        Token pathToken = consume(STRING, "Expect library name after 'import'.");
+        consume(SEMICOLON, "Expect ';' after import statement.");
+        return new Stmt.Import(keyword, (String) pathToken.literal);
+    }
+
+    /**
+     * Parses sequential (extensive form) games:
+     * sequential UltimatumGame {
+     * players Proposer, Responder
+     * 
+     * node Start {
+     * player Proposer
+     * move Fair -> Accept
+     * move Unfair -> Reject
+     * }
+     * 
+     * node Accept {
+     * player Responder
+     * move Accept -> (5, 5)
+     * move Reject -> (0, 0)
+     * }
+     * }
+     */
+    private Stmt sequentialGameDeclaration() {
+        Token name = consume(IDENTIFIER, "Expect sequential game name.");
+        consume(LEFT_BRACE, "Expect '{' after game name.");
+
+        // Parse players
+        consume(PLAYERS, "Expect 'players' declaration.");
+        List<Token> players = new ArrayList<>();
+        do {
+            players.add(consume(IDENTIFIER, "Expect player name."));
+        } while (match(COMMA));
+
+        // Parse nodes
+        List<Stmt.GameNode> nodes = new ArrayList<>();
+        while (match(NODE)) {
+            nodes.add(parseGameNode());
+        }
+
+        consume(RIGHT_BRACE, "Expect '}' after sequential game body.");
+
+        return new Stmt.SequentialGame(name, players, nodes);
+    }
+
+    private Stmt.GameNode parseGameNode() {
+        Token nodeName = consume(IDENTIFIER, "Expect node name.");
+        consume(LEFT_BRACE, "Expect '{' after node name.");
+
+        // Parse player for this node
+        consume(PLAYERS, "Expect 'player' declaration in node.");
+        Token player = consume(IDENTIFIER, "Expect player name.");
+
+        // Parse moves
+        List<Stmt.GameMove> moves = new ArrayList<>();
+        while (match(MOVE)) {
+            Token action = consume(IDENTIFIER, "Expect action name.");
+            consume(ARROW, "Expect '->' after action.");
+
+            if (match(LEFT_PAREN)) {
+                // Terminal payoffs: (num, num, ...)
+                List<Double> payoffs = new ArrayList<>();
+                do {
+                    Token numToken = consume(NUMBER, "Expect payoff number.");
+                    payoffs.add((Double) numToken.literal);
+                } while (match(COMMA));
+                consume(RIGHT_PAREN, "Expect ')' after payoffs.");
+                moves.add(new Stmt.GameMove(action, payoffs));
+            } else {
+                // Target node
+                Token targetNode = consume(IDENTIFIER, "Expect target node name.");
+                moves.add(new Stmt.GameMove(action, targetNode));
+            }
+        }
+
+        consume(RIGHT_BRACE, "Expect '}' after node body.");
+        return new Stmt.GameNode(nodeName, player, moves);
     }
 
     private Stmt classDeclaration() {
@@ -490,7 +609,111 @@ class Parser {
         }
 
         consume(RIGHT_BRACE, "Expect '}' after game body.");
+
+        // === VALIDATION: Catch incomplete games at parse time ===
+        validateGameCompleteness(name, players, strategies, payoffs);
+
         return new Stmt.Game(name, players, strategies, payoffs);
+    }
+
+    /**
+     * Validates that a game definition is complete:
+     * 1. Every player has a payoff definition
+     * 2. Every payoff definition covers all strategy combinations
+     * 3. Payoff rules use only declared strategies
+     */
+    private void validateGameCompleteness(
+            Token name,
+            List<Token> players,
+            List<Token> strategies,
+            Map<Token, Map<StrategyProfile, Expr>> payoffs) {
+
+        // Check 1: Every player must have a payoff definition
+        for (Token player : players) {
+            boolean found = false;
+            for (Token payoffPlayer : payoffs.keySet()) {
+                if (payoffPlayer.lexeme.equals(player.lexeme)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw error(player,
+                        "Player '" + player.lexeme + "' has no payoff definition in game '" +
+                                name.lexeme + "'. Add: payoff " + player.lexeme + " { ... }");
+            }
+        }
+
+        // Check 2: Every payoff definition must cover all strategy combinations
+        int expectedCombinations = (int) Math.pow(strategies.size(), players.size());
+        for (Map.Entry<Token, Map<StrategyProfile, Expr>> entry : payoffs.entrySet()) {
+            Token payoffPlayer = entry.getKey();
+            int actualCombinations = entry.getValue().size();
+
+            if (actualCombinations < expectedCombinations) {
+                // Find missing combinations for helpful error message
+                StringBuilder missing = new StringBuilder();
+                int missingCount = 0;
+                for (Token s1 : strategies) {
+                    for (Token s2 : strategies) {
+                        boolean found = false;
+                        for (StrategyProfile profile : entry.getValue().keySet()) {
+                            if (profile.strategies.size() >= 2 &&
+                                    profile.strategies.get(0).lexeme.equals(s1.lexeme) &&
+                                    profile.strategies.get(1).lexeme.equals(s2.lexeme)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            if (missingCount < 3) { // Show up to 3 missing
+                                if (missingCount > 0)
+                                    missing.append(", ");
+                                missing.append("(").append(s1.lexeme).append(", ").append(s2.lexeme).append(")");
+                            }
+                            missingCount++;
+                        }
+                    }
+                }
+                if (missingCount > 3) {
+                    missing.append(" and ").append(missingCount - 3).append(" more");
+                }
+
+                throw error(payoffPlayer,
+                        "Incomplete payoff matrix for '" + payoffPlayer.lexeme + "' in game '" +
+                                name.lexeme + "': " + actualCombinations + "/" + expectedCombinations +
+                                " combinations defined. Missing: " + missing.toString());
+            }
+        }
+
+        // Check 3: Verify payoff player names match declared players
+        for (Token payoffPlayer : payoffs.keySet()) {
+            boolean found = false;
+            for (Token player : players) {
+                if (player.lexeme.equals(payoffPlayer.lexeme)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw error(payoffPlayer,
+                        "Payoff defined for '" + payoffPlayer.lexeme + "' but this player is not declared. " +
+                                "Declared players: " + formatPlayerList(players));
+            }
+        }
+    }
+
+    /**
+     * Helper to format player list for error messages
+     */
+    private String formatPlayerList(List<Token> players) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < players.size(); i++) {
+            if (i > 0)
+                sb.append(", ");
+            sb.append(players.get(i).lexeme);
+        }
+        return sb.toString();
     }
 
     /**
@@ -551,6 +774,16 @@ class Parser {
         }
         consume(SEMICOLON, "Expect ';' after solve statement.");
         return new Stmt.Solve(gameName, algorithm);
+    }
+
+    /**
+     * Parses: visualize GAME_NAME;
+     */
+    private Stmt visualizeStatement() {
+        Token keyword = previous();
+        Token gameName = consume(IDENTIFIER, "Expect game name after 'visualize'.");
+        consume(SEMICOLON, "Expect ';' after visualize statement.");
+        return new Stmt.Visualize(keyword, gameName);
     }
 
     /**
