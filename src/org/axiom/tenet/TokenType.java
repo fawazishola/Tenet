@@ -10,7 +10,13 @@ enum TokenType {
     AND, CLASS, ELSE, IF, NIL, FUN, FALSE, TRUE, OR, PRINT, RETURN, SUPER, THIS, VAR, WHILE, FOR,
 
     // Game theory tokens
-    GAME, PLAYERS, STRATEGIES, PAYOFF, SOLVE, USING, COLON,
+    GAME, PLAYERS, STRATEGIES, PAYOFF, SOLVE, USING, COLON, IMPORT,
+
+    // Mechanism design tokens
+    TWEAK, FROM, TO, STEP,
+
+    // Sequential game tokens
+    SEQUENTIAL, NODE, MOVE, ARROW, VISUALIZE,
 
     EOF
 
