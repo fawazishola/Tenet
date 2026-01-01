@@ -139,6 +139,113 @@ class GraphGenerator {
         return dot.toString();
     }
 
+    /**
+     * Generate a DOT representation of a sequential game tree
+     */
+    static String generateGameTree(SequentialGameValue game) {
+        StringBuilder dot = new StringBuilder();
+
+        dot.append("digraph ").append(game.name).append(" {\n");
+        dot.append("    rankdir=TB;\n");
+        dot.append("    node [fontname=\"Arial\", fontsize=12];\n");
+        dot.append("    edge [fontname=\"Arial\", fontsize=10];\n");
+        dot.append("    label=\"").append(game.name).append("\";\n");
+        dot.append("    labelloc=t;\n");
+        dot.append("    fontsize=16;\n");
+        dot.append("    fontname=\"Arial Bold\";\n");
+        dot.append("\n");
+
+        // Use a set to track visited nodes to avoid duplicates if cycles exist (though
+        // tree shouldn't have cycles)
+        // For simple tree traversal, we'll recurse from root
+        if (game.rootNodeName != null) {
+            generateNode(dot, game, game.rootNodeName);
+        }
+
+        dot.append("}\n");
+        return dot.toString();
+    }
+
+    private static void generateNode(StringBuilder dot, SequentialGameValue game, String nodeName) {
+        Stmt.GameNode node = game.nodes.get(nodeName);
+        if (node == null)
+            return;
+
+        // Decision Node
+        String color = "#3498DB"; // Default blue
+        // Color based on player?
+        // Simple mapping: 0 -> Blue, 1 -> Red, etc.
+        int playerIdx = 0;
+        for (int i = 0; i < game.players.size(); i++) {
+            if (game.players.get(i).lexeme.equals(node.player.lexeme)) {
+                playerIdx = i;
+                break;
+            }
+        }
+        if (playerIdx == 1)
+            color = "#E74C3C"; // Red
+        if (playerIdx == 2)
+            color = "#2ECC71"; // Green
+
+        dot.append("    ").append(nodeName)
+                .append(" [shape=ellipse, style=filled, fillcolor=\"").append(color)
+                .append("\", fontcolor=white, label=\"").append(node.player.lexeme).append("\"];\n");
+
+        // Edges
+        for (Stmt.GameMove move : node.moves) {
+            String edgeLabel = move.action.lexeme;
+
+            if (move.isTerminal()) {
+                // Terminal node
+                String termNodeName = nodeName + "_" + move.action.lexeme + "_term";
+                StringBuilder payoffs = new StringBuilder("(");
+                for (int i = 0; i < move.payoffs.size(); i++) {
+                    if (i > 0)
+                        payoffs.append(", ");
+                    double p = move.payoffs.get(i);
+                    if (p == (long) p)
+                        payoffs.append((long) p);
+                    else
+                        payoffs.append(p);
+                }
+                payoffs.append(")");
+
+                dot.append("    ").append(termNodeName)
+                        .append(" [shape=box, style=filled, fillcolor=\"#F1C40F\", label=\"")
+                        .append(payoffs).append("\"];\n");
+
+                dot.append("    ").append(nodeName).append(" -> ").append(termNodeName)
+                        .append(" [label=\"").append(edgeLabel).append("\"];\n");
+            } else {
+                // Edge to next node
+                String targetName = move.targetNode.lexeme;
+                // Recursive call?
+                // We should only generate nodes once. But if it's a tree, distinct paths might
+                // lead to same node definition if we are exploring structure?
+                // Actually, in extensive form, checks usually ensure it's a tree.
+                // But let's just draw the edge. The node definition will be handled if we
+                // iterate all nodes or recurse.
+                // If we recurse, we might duplicate if simple recursion.
+                // Better approach: Iterate all nodes in the game to define them, then iterate
+                // all moves to define edges.
+                // BUT, to get the hierarchy right, recursion is fine if strict tree.
+                // Let's just draw edge. The node generation handles duplicates implicitly by
+                // DOT being idempotent on node attributes?
+                // No, duplicate nodes in DOT is fine, duplicate EDGES is what we want to avoid.
+                // Let's just recursively call generateNode?
+                // Wait, if I recurse, I might generate the target node definition multiple
+                // times.
+                // DOT handles repeated node definitions by merging/overwriting.
+                // So simple recursion is safe for definitions.
+
+                dot.append("    ").append(nodeName).append(" -> ").append(targetName)
+                        .append(" [label=\"").append(edgeLabel).append("\"];\n");
+
+                generateNode(dot, game, targetName);
+            }
+        }
+    }
+
     private static String getPayoff(GameValue game, String player, Token s1, Token s2) {
         Map<StrategyProfile, Expr> playerPayoffs = null;
 

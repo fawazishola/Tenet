@@ -1,0 +1,44 @@
+// ═══════════════════════════════════════════════════════════════
+// TWEAK TEST: Mechanism Design Parameter Sweeping
+// This demonstrates reverse-engineering incentives to get desired outcomes
+// ═══════════════════════════════════════════════════════════════
+
+// Define a variable that represents "cooperation reward"
+var reward = 3;
+
+// Define a Prisoner's Dilemma where cooperation payoff is variable
+game TweakablePD {
+    players Alice, Bob
+    strategies Cooperate, Defect
+    
+    payoff Alice {
+        (Cooperate, Cooperate): reward  // Uses the variable!
+        (Cooperate, Defect): 0
+        (Defect, Cooperate): 5
+        (Defect, Defect): 1
+    }
+    
+    payoff Bob {
+        (Cooperate, Cooperate): reward  // Uses the variable!
+        (Cooperate, Defect): 5
+        (Defect, Cooperate): 0
+        (Defect, Defect): 1
+    }
+}
+
+print "";
+print "=== MECHANISM DESIGN: Finding the Cooperation Threshold ===";
+print "";
+print "Question: At what cooperation reward does (Cooperate, Cooperate)";
+print "          become a Nash equilibrium alongside (Defect, Defect)?";
+print "";
+
+// Sweep the reward from 1 to 8
+// When reward > 5, (Cooperate, Cooperate) becomes an equilibrium!
+tweak TweakablePD { reward from 1 to 8 step 1 }
+
+print "";
+print "INSIGHT: When cooperation reward exceeds defection temptation (5),";
+print "         cooperation becomes a valid equilibrium!";
+print "";
+print "This is mechanism design - engineering payoffs to get desired outcomes.";

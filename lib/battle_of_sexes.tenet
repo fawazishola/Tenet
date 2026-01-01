@@ -1,0 +1,26 @@
+// ═══════════════════════════════════════════════════════════════
+// STANDARD LIBRARY: Battle of the Sexes
+// Coordination game with conflicting preferences
+// ═══════════════════════════════════════════════════════════════
+
+game BattleOfSexes {
+    players Alice, Bob
+    strategies Opera, Football
+    
+    // Both want to be together, but have different preferences
+    // Alice prefers Opera, Bob prefers Football
+    
+    payoff Alice {
+        (Opera, Opera): 3
+        (Opera, Football): 0
+        (Football, Opera): 0
+        (Football, Football): 2
+    }
+    
+    payoff Bob {
+        (Opera, Opera): 2
+        (Opera, Football): 0
+        (Football, Opera): 0
+        (Football, Football): 3
+    }
+}

@@ -1,0 +1,31 @@
+// ═══════════════════════════════════════════════════════════════
+// VALIDATION TEST: Complete Game (SHOULD PASS)
+// This file tests that valid games still work after validation
+// ═══════════════════════════════════════════════════════════════
+
+game CompleteGame {
+    players A, B
+    strategies X, Y
+    
+    payoff A {
+        (X, X): 10
+        (X, Y): 5
+        (Y, X): 5
+        (Y, Y): 0
+    }
+    
+    payoff B {
+        (X, X): 10
+        (X, Y): 5
+        (Y, X): 5
+        (Y, Y): 0
+    }
+}
+
+print "=== Validation Test: Complete Game ===";
+print "This game has all required payoff combinations.";
+
+solve CompleteGame;
+
+print "";
+print "SUCCESS: Complete game passed validation!";

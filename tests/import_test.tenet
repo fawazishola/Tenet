@@ -1,0 +1,27 @@
+// ═══════════════════════════════════════════════════════════════
+// IMPORT TEST: Standard Library Usage
+// This demonstrates importing games from the standard library
+// ═══════════════════════════════════════════════════════════════
+
+import "prisoners_dilemma";
+import "chicken";
+import "battle_of_sexes";
+
+print "=== Standard Library Import Test ===";
+print "";
+print "Imported 3 canonical games from lib/";
+print "";
+
+print "--- Prisoner's Dilemma ---";
+solve PrisonersDilemma;
+
+print "";
+print "--- Chicken (Hawk-Dove) ---";
+solve Chicken;
+
+print "";
+print "--- Battle of the Sexes ---";
+solve BattleOfSexes;
+
+print "";
+print "SUCCESS: All library games imported and solved!";

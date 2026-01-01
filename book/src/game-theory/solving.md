@@ -14,53 +14,45 @@ This analyzes the specified game and outputs information.
 
 ---
 
-## Current Output
+## Nash Equilibrium Solver
 
-In the current version, `solve` displays game structure:
+Tenet supports finding **Pure Strategy Nash Equilibria**.
 
 ```tenet
-game PrisonersDilemma {
-    players Alice, Bob
-    strategies Cooperate, Defect
-    
-    payoff Alice {
-        (Cooperate, Cooperate): 3
-        (Cooperate, Defect): 0
-        (Defect, Cooperate): 5
-        (Defect, Defect): 1
-    }
-    
-    payoff Bob {
-        (Cooperate, Cooperate): 3
-        (Defect, Cooperate): 0
-        (Cooperate, Defect): 5
-        (Defect, Defect): 1
-    }
-}
-
 solve PrisonersDilemma;
 ```
 
-Output:
+**Output:**
+
 ```
-=== Game: PrisonersDilemma ===
+═══════════════════════════════════════
+Game: PrisonersDilemma
 Players: Alice, Bob
 Strategies: Cooperate, Defect
-Payoff matrix displayed...
+───────────────────────────────────────
+Nash Equilibria (Pure Strategy):
+  -> (Defect, Defect) with payoffs (1, 1)
+═══════════════════════════════════════
 ```
 
----
+### How it Works
+The solver iterates through every possible strategy profile (combination of strategies). For each profile, it checks if any player has a unilateral incentive to deviate (switch strategies) to improve their payoff. If no player wants to switch, it is a Nash Equilibrium.
 
-## Coming Soon: Nash Equilibrium Finder
+### Multiple Equilibria
+If a game has multiple pure strategy equilibria, like the **Battle of the Sexes**, Tenet will list them all:
 
-### Phase 2: Pure Strategy Nash Equilibria
+```
+Nash Equilibria (Pure Strategy):
+  -> (Opera, Opera) with payoffs (3, 2)
+  -> (Football, Football) with payoffs (2, 3)
+```
 
-```tenet
-solve PrisonersDilemma;
-// Expected output:
-// Nash Equilibria (Pure):
-//   (Defect, Defect)
-//     Alice: 1, Bob: 1
+### No Pure Equilibrium
+Some games, like **Matching Pennies**, have no pure strategy equilibrium. In this case, Tenet will inform you:
+
+```
+No Pure Strategy Nash Equilibrium found.
+Try mixed strategies (coming soon).
 ```
 
 **Algorithm**: Check all strategy profiles for mutual best responses.

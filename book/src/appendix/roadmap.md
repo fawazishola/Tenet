@@ -32,10 +32,10 @@
 ## In Progress 🔨
 
 ### Nash Equilibrium Solver (Phase 2)
-- [ ] Pure strategy Nash equilibrium finder
-- [ ] Best response calculation
+- [x] Pure strategy Nash equilibrium finder
+- [x] Best response calculation
+- [x] Equilibrium output formatting
 - [ ] Dominant strategy detection
-- [ ] Equilibrium output formatting
 
 ---
 

@@ -1,0 +1,72 @@
+// Test 1: Prisoner's Dilemma
+// Expected: (Defect, Defect)
+game PrisonersDilemma {
+    players Alice, Bob
+    strategies Cooperate, Defect
+    
+    payoff Alice {
+        (Cooperate, Cooperate): 3
+        (Cooperate, Defect): 0
+        (Defect, Cooperate): 5
+        (Defect, Defect): 1
+    }
+    
+    payoff Bob {
+        (Cooperate, Cooperate): 3
+        (Defect, Cooperate): 0
+        (Cooperate, Defect): 5
+        (Defect, Defect): 1
+    }
+}
+print "--- Solving Prisoner's Dilemma ---";
+solve PrisonersDilemma;
+
+
+// Test 2: Battle of the Sexes
+// Expected: (Opera, Opera) AND (Football, Football)
+game BattleOfSexes {
+    players Husband, Wife
+    strategies Opera, Football
+    
+    payoff Husband {
+        (Opera, Opera): 3
+        (Opera, Football): 0
+        (Football, Opera): 0
+        (Football, Football): 2
+    }
+    
+    payoff Wife {
+        (Opera, Opera): 2
+        (Opera, Football): 0
+        (Football, Opera): 0
+        (Football, Football): 3
+    }
+}
+print "";
+print "--- Solving Battle of the Sexes ---";
+solve BattleOfSexes;
+
+
+// Test 3: Matching Pennies
+// Expected: No Pure Strategy Nash Equilibrium
+game MatchingPennies {
+    players Player1, Player2
+    strategies Heads, Tails
+    
+    payoff Player1 {
+        (Heads, Heads): 1
+        (Heads, Tails): -1
+        (Tails, Heads): -1
+        (Tails, Tails): 1
+    }
+    
+    payoff Player2 {
+        (Heads, Heads): -1
+        (Heads, Tails): 1
+        (Tails, Heads): 1
+        (Tails, Tails): -1
+    }
+}
+print "";
+print "--- Solving Matching Pennies ---";
+solve MatchingPennies;

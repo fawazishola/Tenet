@@ -314,4 +314,35 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         // Nothing to resolve - game name is looked up at runtime
         return null;
     }
+
+    // Standard library: resolve import statement
+    @Override
+    public Void visitImportStmt(Stmt.Import stmt) {
+        // Imports are resolved and executed at runtime
+        // Nothing to resolve statically
+        return null;
+    }
+
+    // Mechanism design: resolve tweak statement
+    @Override
+    public Void visitTweakStmt(Stmt.Tweak stmt) {
+        // Tweak is resolved at runtime
+        // Nothing to resolve statically
+        return null;
+    }
+
+    // Sequential games: resolve sequential game statement
+    @Override
+    public Void visitSequentialGameStmt(Stmt.SequentialGame stmt) {
+        // Sequential games are resolved at runtime
+        // Nothing to resolve statically
+        return null;
+    }
+
+    // Visualization: resolve visualize statement
+    @Override
+    public Void visitVisualizeStmt(Stmt.Visualize stmt) {
+        // Nothing to resolve - game name is looked up at runtime
+        return null;
+    }
 }

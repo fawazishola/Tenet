@@ -1,0 +1,23 @@
+sequential UltimatumGame {
+    players Proposer, Responder
+    
+    node root {
+        player Proposer
+        move Offer50 -> split50
+        move Offer80 -> split80
+    }
+    
+    node split50 {
+        player Responder
+        move Accept -> (50, 50)
+        move Reject -> (0, 0)
+    }
+    
+    node split80 {
+        player Responder
+        move Accept -> (80, 20)
+        move Reject -> (0, 0)
+    }
+}
+
+visualize UltimatumGame;

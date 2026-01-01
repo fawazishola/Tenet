@@ -230,7 +230,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return evaluate(expr.expression);
     }
 
-    private Object evaluate(Expr expr) {
+    Object evaluate(Expr expr) {
         return expr.accept(this);
     }
 
@@ -544,20 +544,251 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
-    // Game theory: solve statement (placeholder for now)
+    // Game theory: solve statement - handles both normal form and sequential games
     @Override
     public Void visitSolveStmt(Stmt.Solve stmt) {
         Object game = environment.get(stmt.gameName);
+
+        // Handle sequential games
+        if (game instanceof SequentialGameValue) {
+            return solveSequentialGame((SequentialGameValue) game, stmt);
+        }
+
+        // Handle normal form games
         if (!(game instanceof GameValue)) {
             throw new RuntimeError(stmt.gameName, "Can only solve games.");
         }
         GameValue gameValue = (GameValue) game;
-        System.out.println("═══════════════════════════════════════");
+        System.out.println("-------------------------------------------");
         System.out.println("Game: " + gameValue.name);
         System.out.println("Players: " + gameValue.getPlayersString());
         System.out.println("Strategies: " + gameValue.getStrategiesString());
-        System.out.println("═══════════════════════════════════════");
-        // TODO: Implement Nash equilibrium solver in Phase 2
+        System.out.println("-------------------------------------------");
+
+        NashSolver solver = new NashSolver(this);
+        List<StrategyProfile> equilibria = solver.findPureEquilibria(gameValue);
+
+        if (equilibria.isEmpty()) {
+            System.out.println("No Pure Strategy Nash Equilibrium found.");
+            System.out.println("Try mixed strategies (coming soon).");
+        } else {
+            System.out.println("Nash Equilibria (Pure Strategy):");
+            for (StrategyProfile eq : equilibria) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("  -> (");
+                for (int i = 0; i < eq.strategies.size(); i++) {
+                    if (i > 0)
+                        sb.append(", ");
+                    sb.append(eq.strategies.get(i).lexeme);
+                }
+                sb.append(")");
+
+                // Add payoffs
+                sb.append(" with payoffs (");
+                for (int i = 0; i < gameValue.players.size(); i++) {
+                    if (i > 0)
+                        sb.append(", ");
+                    Object payoff = gameValue.getPayoff(gameValue.players.get(i), eq, this);
+                    sb.append(stringify(payoff));
+                }
+                sb.append(")");
+
+                System.out.println(sb.toString());
+            }
+        }
+        System.out.println("-------------------------------------------");
+        return null;
+    }
+
+    private Void solveSequentialGame(SequentialGameValue game, Stmt.Solve stmt) {
+        System.out.println("-------------------------------------------");
+        System.out.println("Sequential Game: " + game.name);
+        System.out.print("Players: ");
+        for (int i = 0; i < game.players.size(); i++) {
+            if (i > 0)
+                System.out.print(", ");
+            System.out.print(game.players.get(i).lexeme);
+        }
+        System.out.println();
+        System.out.println("Nodes: " + game.nodes.size());
+        System.out.println("-------------------------------------------");
+
+        BackwardInductionSolver solver = new BackwardInductionSolver();
+        BackwardInductionSolver.Solution solution = solver.solve(game);
+
+        System.out.println("Subgame Perfect Equilibrium (Backward Induction):");
+
+        // Print the equilibrium path
+        System.out.print("  Path: ");
+        for (int i = 0; i < solution.path.size(); i++) {
+            if (i > 0)
+                System.out.print(" -> ");
+            System.out.print(solution.path.get(i));
+        }
+        System.out.println();
+
+        // Print the final payoffs
+        System.out.print("  Payoffs: (");
+        for (int i = 0; i < solution.payoffs.size(); i++) {
+            if (i > 0)
+                System.out.print(", ");
+            System.out.print(formatNumber(solution.payoffs.get(i)));
+        }
+        System.out.println(")");
+
+        System.out.println("-------------------------------------------");
+        return null;
+    }
+
+    // Standard library: import statement
+    @Override
+    public Void visitImportStmt(Stmt.Import stmt) {
+        String path = resolveLibraryPath(stmt.path);
+        String source = readFile(path, stmt.keyword);
+
+        // Parse the imported file
+        Scanner scanner = new Scanner(source);
+        List<Token> tokens = scanner.scanTokens();
+        Parser parser = new Parser(tokens);
+        List<Stmt> statements = parser.parse();
+
+        // Execute imported statements in current environment
+        // This defines the games in our global scope
+        for (Stmt statement : statements) {
+            execute(statement);
+        }
+
+        return null;
+    }
+
+    // Visualization statement
+    @Override
+    public Void visitVisualizeStmt(Stmt.Visualize stmt) {
+        Object game = environment.get(stmt.gameName);
+
+        if (game instanceof SequentialGameValue) {
+            String dot = GraphGenerator.generateGameTree((SequentialGameValue) game);
+            System.out.println(dot);
+        } else if (game instanceof GameValue) {
+            String dot = GraphGenerator.generateMatrixView((GameValue) game);
+            System.out.println(dot);
+        } else {
+            throw new RuntimeError(stmt.gameName, "Can only visualize games.");
+        }
+        return null;
+    }
+
+    /**
+     * Resolves a library path - checks lib/ first, then relative path
+     */
+    private String resolveLibraryPath(String name) {
+        // First check lib/ directory (standard library)
+        java.io.File libFile = new java.io.File("lib/" + name + ".tenet");
+        if (libFile.exists()) {
+            return libFile.getPath();
+        }
+
+        // Then check if it's already a path with extension
+        if (name.endsWith(".tenet")) {
+            return name;
+        }
+
+        // Otherwise add .tenet extension
+        return name + ".tenet";
+    }
+
+    /**
+     * Reads file contents for import
+     */
+    private String readFile(String path, Token keyword) {
+        try {
+            byte[] bytes = java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(path));
+            return new String(bytes, java.nio.charset.Charset.defaultCharset());
+        } catch (java.io.IOException e) {
+            throw new RuntimeError(keyword, "Could not import '" + path + "': " + e.getMessage());
+        }
+    }
+
+    // Mechanism design: tweak statement for parameter sweeping
+    @Override
+    public Void visitTweakStmt(Stmt.Tweak stmt) {
+        Object gameObj = environment.get(stmt.gameName);
+        if (!(gameObj instanceof GameValue)) {
+            throw new RuntimeError(stmt.gameName, "Can only tweak games.");
+        }
+
+        GameValue game = (GameValue) gameObj;
+        NashSolver solver = new NashSolver(this);
+
+        System.out.println("-----------------------------------------------------------");
+        System.out.println("MECHANISM DESIGN: Tweaking '" + stmt.variable.lexeme +
+                "' in game '" + game.name + "'");
+        System.out.println("Range: " + formatNumber(stmt.fromValue) + " to " +
+                formatNumber(stmt.toValue) + " (step " + formatNumber(stmt.stepValue) + ")");
+        System.out.println("-----------------------------------------------------------");
+
+        // Store original value
+        Object originalValue = null;
+        try {
+            originalValue = environment.get(stmt.variable);
+        } catch (RuntimeError e) {
+            // Variable doesn't exist yet - that's okay
+        }
+
+        // Sweep through values
+        for (double value = stmt.fromValue; value <= stmt.toValue; value += stmt.stepValue) {
+            // Update the variable
+            environment.define(stmt.variable.lexeme, value);
+
+            // Find equilibria at this value
+            List<StrategyProfile> equilibria = solver.findPureEquilibria(game);
+
+            // Print results
+            StringBuilder sb = new StringBuilder();
+            sb.append(stmt.variable.lexeme).append("=").append(formatNumber(value)).append(": ");
+
+            if (equilibria.isEmpty()) {
+                sb.append("No pure Nash equilibrium");
+            } else {
+                sb.append("Equilibria = ");
+                for (int i = 0; i < equilibria.size(); i++) {
+                    if (i > 0)
+                        sb.append(", ");
+                    StrategyProfile eq = equilibria.get(i);
+                    sb.append("(");
+                    for (int j = 0; j < eq.strategies.size(); j++) {
+                        if (j > 0)
+                            sb.append(", ");
+                        sb.append(eq.strategies.get(j).lexeme);
+                    }
+                    sb.append(")");
+                }
+            }
+            System.out.println(sb.toString());
+        }
+
+        // Restore original value if it existed
+        if (originalValue != null) {
+            environment.define(stmt.variable.lexeme, originalValue);
+        }
+
+        System.out.println("-----------------------------------------------------------");
+
+        return null;
+    }
+
+    private String formatNumber(double value) {
+        if (value == (long) value) {
+            return String.format("%d", (long) value);
+        }
+        return String.format("%.2f", value);
+    }
+
+    // Sequential games: create game value and define in environment
+    @Override
+    public Void visitSequentialGameStmt(Stmt.SequentialGame stmt) {
+        SequentialGameValue game = new SequentialGameValue(stmt);
+        environment.define(stmt.name.lexeme, game);
         return null;
     }
 }

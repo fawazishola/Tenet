@@ -16,13 +16,21 @@ abstract class Stmt {
 
         R visitIfStmt(If stmt);
 
+        R visitImportStmt(Import stmt);
+
         R visitPrintStmt(Print stmt);
 
         R visitReturnStmt(Return stmt);
 
+        R visitSequentialGameStmt(SequentialGame stmt);
+
         R visitSolveStmt(Solve stmt);
 
+        R visitTweakStmt(Tweak stmt);
+
         R visitVarStmt(Var stmt);
+
+        R visitVisualizeStmt(Visualize stmt);
 
         R visitWhileStmt(While stmt);
     }
@@ -197,6 +205,119 @@ abstract class Stmt {
 
         final Token gameName;
         final Token algorithm; // null means default (pure)
+    }
+
+    // Standard library: Import statement
+    static class Import extends Stmt {
+        Import(Token keyword, String path) {
+            this.keyword = keyword;
+            this.path = path;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitImportStmt(this);
+        }
+
+        final Token keyword;
+        final String path;
+    }
+
+    // Mechanism design: Tweak statement for parameter sweeping
+    static class Tweak extends Stmt {
+        Tweak(Token keyword, Token gameName, Token variable,
+                double fromValue, double toValue, double stepValue) {
+            this.keyword = keyword;
+            this.gameName = gameName;
+            this.variable = variable;
+            this.fromValue = fromValue;
+            this.toValue = toValue;
+            this.stepValue = stepValue;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitTweakStmt(this);
+        }
+
+        final Token keyword;
+        final Token gameName;
+        final Token variable;
+        final double fromValue;
+        final double toValue;
+        final double stepValue;
+    }
+
+    // Visualization: Generate DOT graph
+    static class Visualize extends Stmt {
+        Visualize(Token keyword, Token gameName) {
+            this.keyword = keyword;
+            this.gameName = gameName;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitVisualizeStmt(this);
+        }
+
+        final Token keyword;
+        final Token gameName;
+    }
+
+    // Sequential games (extensive form)
+    static class SequentialGame extends Stmt {
+        SequentialGame(Token name, List<Token> players, List<GameNode> nodes) {
+            this.name = name;
+            this.players = players;
+            this.nodes = nodes;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitSequentialGameStmt(this);
+        }
+
+        final Token name;
+        final List<Token> players;
+        final List<GameNode> nodes;
+    }
+
+    // Represents a decision node in the game tree
+    static class GameNode {
+        GameNode(Token name, Token player, List<GameMove> moves) {
+            this.name = name;
+            this.player = player;
+            this.moves = moves;
+        }
+
+        final Token name;
+        final Token player;
+        final List<GameMove> moves;
+    }
+
+    // Represents a move/edge in the game tree
+    static class GameMove {
+        // Move to another node
+        GameMove(Token action, Token targetNode) {
+            this.action = action;
+            this.targetNode = targetNode;
+            this.payoffs = null;
+        }
+
+        // Move to terminal payoffs
+        GameMove(Token action, List<Double> payoffs) {
+            this.action = action;
+            this.targetNode = null;
+            this.payoffs = payoffs;
+        }
+
+        final Token action;
+        final Token targetNode; // null if terminal
+        final List<Double> payoffs; // null if not terminal
+
+        boolean isTerminal() {
+            return payoffs != null;
+        }
     }
 
     abstract <R> R accept(Visitor<R> visitor);

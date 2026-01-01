@@ -1,0 +1,23 @@
+sequential UltimatumGame {
+    players Proposer, Responder
+    
+    node Start {
+        player Proposer
+        move FairOffer -> AcceptOffer
+        move UnfairOffer -> RejectOffer
+    }
+    
+    node AcceptOffer {
+        player Responder
+        move Accept -> (5, 5)
+        move Reject -> (0, 0)
+    }
+    
+    node RejectOffer {
+        player Responder
+        move Accept -> (9, 1)
+        move Reject -> (0, 0)
+    }
+}
+
+solve UltimatumGame;

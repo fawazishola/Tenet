@@ -1,0 +1,28 @@
+// ═══════════════════════════════════════════════════════════════
+// STANDARD LIBRARY: Prisoner's Dilemma
+// The foundational game of game theory - cooperation vs defection
+// ═══════════════════════════════════════════════════════════════
+
+game PrisonersDilemma {
+    players Alice, Bob
+    strategies Cooperate, Defect
+    
+    // Classic payoff structure:
+    // - Mutual cooperation: Both get 3
+    // - Mutual defection: Both get 1
+    // - Exploitation: Defector gets 5, cooperator gets 0
+    
+    payoff Alice {
+        (Cooperate, Cooperate): 3
+        (Cooperate, Defect): 0
+        (Defect, Cooperate): 5
+        (Defect, Defect): 1
+    }
+    
+    payoff Bob {
+        (Cooperate, Cooperate): 3
+        (Cooperate, Defect): 5
+        (Defect, Cooperate): 0
+        (Defect, Defect): 1
+    }
+}

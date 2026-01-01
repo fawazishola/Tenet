@@ -1,0 +1,20 @@
+// ═══════════════════════════════════════════════════════════════
+// VALIDATION TEST: Incomplete Game (SHOULD FAIL)
+// This file tests the enhanced validation feature
+// ═══════════════════════════════════════════════════════════════
+
+// TEST 1: Missing payoff definition for a player
+game MissingPlayerPayoff {
+    players Alice, Bob
+    strategies Cooperate, Defect
+    
+    payoff Alice {
+        (Cooperate, Cooperate): 3
+        (Cooperate, Defect): 0
+        (Defect, Cooperate): 5
+        (Defect, Defect): 1
+    }
+    // ERROR: Bob has no payoff definition!
+}
+
+print "If you see this, validation failed!";

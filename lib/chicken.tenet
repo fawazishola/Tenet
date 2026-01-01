@@ -1,0 +1,28 @@
+// ═══════════════════════════════════════════════════════════════
+// STANDARD LIBRARY: Chicken Game (Hawk-Dove)
+// Models brinkmanship and conflict scenarios
+// ═══════════════════════════════════════════════════════════════
+
+game Chicken {
+    players Driver1, Driver2
+    strategies Swerve, Straight
+    
+    // Payoff structure:
+    // - Both swerve (tie): 0, 0
+    // - One swerves (chicken loses face): -1 for swerve, +1 for straight
+    // - Both straight (crash): -10, -10
+    
+    payoff Driver1 {
+        (Swerve, Swerve): 0
+        (Swerve, Straight): -1
+        (Straight, Swerve): 1
+        (Straight, Straight): -10
+    }
+    
+    payoff Driver2 {
+        (Swerve, Swerve): 0
+        (Swerve, Straight): 1
+        (Straight, Swerve): -1
+        (Straight, Straight): -10
+    }
+}

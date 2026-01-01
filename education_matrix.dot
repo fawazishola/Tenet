@@ -1,0 +1,26 @@
+digraph EducationDecision {
+    rankdir=LR;
+    node [shape=none];
+    label= EducationDecision - Payoff Matrix;
+    labelloc=t;
+    fontsize=16;
+    matrix [label=<
+        <TABLE BORDER=1 CELLBORDER=1 CELLSPACING=0 CELLPADDING=8>
+            <TR>
+                <TD BGCOLOR=#95A5A6><B>Student \ Economy</B></TD>
+                <TD BGCOLOR=#3498DB><FONT COLOR=white><B>StayInSchool</B></FONT></TD>
+                <TD BGCOLOR=#3498DB><FONT COLOR=white><B>DropOut</B></FONT></TD>
+            </TR>
+            <TR>
+                <TD BGCOLOR=#E74C3C><FONT COLOR=white><B>StayInSchool</B></FONT></TD>
+                <TD>(100, 0)</TD>
+                <TD>(-50, 0)</TD>
+            </TR>
+            <TR>
+                <TD BGCOLOR=#E74C3C><FONT COLOR=white><B>DropOut</B></FONT></TD>
+                <TD>(20, 0)</TD>
+                <TD>(-10, 0)</TD>
+            </TR>
+        </TABLE>
+    >];
+}

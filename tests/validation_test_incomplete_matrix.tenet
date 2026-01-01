@@ -1,0 +1,23 @@
+// ═══════════════════════════════════════════════════════════════
+// VALIDATION TEST: Incomplete Payoff Matrix (SHOULD FAIL)
+// This file tests the enhanced validation feature
+// ═══════════════════════════════════════════════════════════════
+
+// TEST 2: Incomplete payoff matrix
+game IncompleteMatrix {
+    players A, B
+    strategies X, Y
+    
+    payoff A {
+        (X, X): 10
+        // Missing: (X, Y), (Y, X), (Y, Y)
+    }
+    
+    payoff B {
+        (X, X): 10
+        (X, Y): 5
+        // Missing: (Y, X), (Y, Y)
+    }
+}
+
+print "If you see this, validation failed!";

@@ -1,0 +1,25 @@
+digraph EducationDecision {
+    rankdir=TB;
+    node [fontname= Arial, fontsize=12];
+    edge [fontname=Arial, fontsize=10];
+    label=EducationDecision;
+    labelloc=t;
+    fontsize=16;
+    fontname=Arial Bold;
+    Student [shape=ellipse, style=filled, fillcolor=#4ECDC4, fontcolor=white];
+    node [shape=box, style=filled, fillcolor=#F7DC6F];
+    outcome_StayInSchool_StayInSchool [label= 100 0 ];
+    outcome_StayInSchool_DropOut [label= -50 0 ];
+    outcome_DropOut_StayInSchool [label= 20 0 ];
+    outcome_DropOut_DropOut [label= -10 0 ];
+    Student_decision [shape=point, width=0.1];
+    Student -> Student_decision [arrowhead=none];
+    Economy_StayInSchool [shape=point, width=0.1];
+    Student_decision -> Economy_StayInSchool [label= StayInSchool];
+    Economy_StayInSchool -> outcome_StayInSchool_StayInSchool [label=StayInSchool];
+    Economy_StayInSchool -> outcome_StayInSchool_DropOut [label=DropOut];
+    Economy_DropOut [shape=point, width=0.1];
+    Student_decision -> Economy_DropOut [label=DropOut];
+    Economy_DropOut -> outcome_DropOut_StayInSchool [label=StayInSchool];
+    Economy_DropOut -> outcome_DropOut_DropOut [label=DropOut];
+}

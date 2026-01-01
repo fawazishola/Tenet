@@ -35,7 +35,15 @@ game PrisonersDilemma {
 }
 
 solve PrisonersDilemma;
-// Output: Game analysis with Nash equilibrium
+// Output:
+// ═══════════════════════════════════════
+// Game: PrisonersDilemma
+// Players: Alice, Bob
+// Strategies: Cooperate, Defect
+// ───────────────────────────────────────
+// Nash Equilibria (Pure Strategy):
+//   -> (Defect, Defect) with payoffs (1, 1)
+// ═══════════════════════════════════════
 ```
 
 ---

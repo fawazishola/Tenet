@@ -1,5 +1,14 @@
 # Tenet
 
+```
+████████╗███████╗███╗   ███╗███████╗████████╗
+╚══██╔══╝██╔════╝████╗  ████║██╔════╝╚══██╔══╝
+   ██║   █████╗  ██╔██╗ ██╔██║█████╗     ██║   
+   ██║   ██╔══╝  ██║╚██╗██║╚██╝██╔══╝     ██║   
+   ██║   ███████╗██║ ╚████║███████╗   ██║   
+   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚══════╝   ╚═╝   
+```
+
 > A domain-specific language for game theory modeling, analysis, and simulation.
 
 [![Status](https://img.shields.io/badge/status-in%20development-yellow)]()
@@ -142,8 +151,8 @@ java -cp out org.axiom.tenet.Tenet
 - [x] Inheritance
 - [x] **Game Definitions** 
 - [x] **Solve Statement** 
-- [ ] Nash Equilibrium Solver (pure strategies)
-- [ ] Nash Equilibrium Solver (mixed strategies)
+- [x] Nash Equilibrium Solver (pure strategies)
+- [ ] Nash Equilibrium Solver (mixed strategies - Future)
 - [ ] Simulation Engine
 - [ ] Standard Library (common games & strategies)
 
